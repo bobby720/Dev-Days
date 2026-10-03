@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f6f3">
+  <meta name="description" content="Track and manage internal IT support requests.">
+  <title>IT Support Desk</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="IT Support Desk home">
+        <span class="brand-mark" aria-hidden="true">IT</span>
+        <span class="brand-copy">
+          <span class="brand-name">Service Desk</span>
+          <span class="brand-caption">INTERNAL SUPPORT</span>
+        </span>
+      </a>
+      <div class="header-status"><span class="online-dot" aria-hidden="true"></span> Support queue</div>
+    </div>
+  </header>
+
+  <main id="top" class="page-shell">
+    <section class="page-intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">IT OPERATIONS <span aria-hidden="true">/</span> REQUESTS</p>
+        <h1 id="page-title">Support tickets</h1>
+        <p class="intro-copy">Log an issue, track progress, and keep the team moving.</p>
+      </div>
+      <a class="jump-link" href="#new-ticket">＋ <span>New ticket</span></a>
+    </section>
+
+    <section class="metrics" aria-label="Ticket totals">
+      <div class="metric metric-total">
+        <span class="metric-label">Total tickets</span>
+        <strong class="metric-value" id="total-count" aria-live="polite" aria-atomic="true">0</strong>
+        <span class="metric-note">All requests</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label"><span class="metric-dot dot-open" aria-hidden="true"></span>Open</span>
+        <strong class="metric-value" id="open-count" aria-live="polite" aria-atomic="true">0</strong>
+        <span class="metric-note">Awaiting action</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label"><span class="metric-dot dot-progress" aria-hidden="true"></span>In progress</span>
+        <strong class="metric-value" id="progress-count" aria-live="polite" aria-atomic="true">0</strong>
+        <span class="metric-note">Being worked on</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label"><span class="metric-dot dot-resolved" aria-hidden="true"></span>Resolved</span>
+        <strong class="metric-value" id="resolved-count" aria-live="polite" aria-atomic="true">0</strong>
+        <span class="metric-note">Completed requests</span>
+      </div>
+    </section>
+
+    <section class="workspace-grid" aria-label="Ticket management">
+      <section class="form-panel" id="new-ticket" aria-labelledby="form-title">
+        <div class="panel-heading">
+          <span class="section-index" aria-hidden="true">01</span>
+          <div>
+            <h2 id="form-title">Submit a request</h2>
+            <p>Give us the details and we’ll take it from here.</p>
+          </div>
+        </div>
+        <form id="ticket-form" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="title">Issue summary <span class="required-mark">*</span></label>
+              <input id="title" name="title" type="text" maxlength="120" autocomplete="off" required aria-invalid="false" aria-describedby="title-error" placeholder="e.g. Can't connect to office Wi-Fi">
+              <span class="field-error" id="title-error" role="alert" aria-live="assertive"></span>
+            </div>
+            <div class="field">
+              <label for="requester">Your name <span class="required-mark">*</span></label>
+              <input id="requester" name="requester" type="text" maxlength="80" autocomplete="name" required aria-invalid="false" aria-describedby="requester-error" placeholder="Name">
+              <span class="field-error" id="requester-error" role="alert" aria-live="assertive"></span>
+            </div>
+          </div>
+          <div class="field-row field-row-options">
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category" name="category">
+                <option>Hardware</option>
+                <option>Software</option>
+                <option>Network</option>
+                <option>Account access</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="priority">Priority</label>
+              <select id="priority" name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="description">What’s happening? <span class="optional-label">Optional</span></label>
+            <textarea id="description" name="description" rows="4" maxlength="2000" aria-describedby="description-error" placeholder="Include any details that might help us resolve this."></textarea>
+            <span class="field-error" id="description-error" role="alert" aria-live="assertive"></span>
+          </div>
+          <div class="form-footer">
+            <p class="required-note"><span class="required-mark">*</span> Required fields</p>
+            <button class="button button-primary" type="submit"><span aria-hidden="true">＋</span> Create ticket</button>
+          </div>
+          <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="queue-panel" aria-labelledby="queue-title">
+        <div class="queue-heading">
+          <div class="queue-title-row">
+            <span class="section-index" aria-hidden="true">02</span>
+            <div>
+              <h2 id="queue-title" tabindex="-1">Ticket queue</h2>
+              <p id="visible-count" class="queue-subtitle">0 tickets</p>
+            </div>
+          </div>
+          <div class="filters" role="search" aria-label="Filter tickets">
+            <div class="search-wrap">
+              <label class="visually-hidden" for="ticket-search">Search title or requester</label>
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input id="ticket-search" type="search" placeholder="Search tickets" autocomplete="off">
+            </div>
+            <div class="select-wrap">
+              <label class="visually-hidden" for="status-filter">Filter by status</label>
+              <select id="status-filter">
+                <option value="All">All statuses</option>
+                <option value="Open">Open</option>
+                <option value="In Progress">In progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+            <div class="select-wrap category-filter-wrap">
+              <label class="visually-hidden" for="category-filter">Filter by category</label>
+              <select id="category-filter">
+                <option value="All">All categories</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+                <option value="Network">Network</option>
+                <option value="Account access">Account access</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="ticket-list" class="ticket-list" aria-live="polite" aria-relevant="additions removals text"></div>
+        <div id="empty-state" class="empty-state" role="status" aria-live="polite" hidden>
+          <span class="empty-mark" aria-hidden="true">—</span>
+          <h3 id="empty-title">No tickets exist yet—create your first one</h3>
+          <p id="empty-copy">New requests will appear here once submitted.</p>
+          <button id="clear-filters" class="button button-secondary" type="button" hidden>Clear Filters</button>
+        </div>
+      </section>
+    </section>
+    <p id="storage-notice" class="storage-notice" role="status" aria-live="polite"></p>
+  </main>
+  <footer class="site-footer"><span>IT SERVICE DESK</span><span>Keep work moving.</span></footer>
+</body>
+</html>
